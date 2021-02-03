@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Node.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mskinner <v.golskiy@ya.ru>                 +#+  +:+       +#+        */
+/*   By: mskinner <v.golskiy@yandex.ru>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/25 17:22:26 by mskinner          #+#    #+#             */
-/*   Updated: 2021/01/28 18:57:01 by mskinner         ###   ########.fr       */
+/*   Updated: 2021/02/03 03:19:50 by mskinner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #ifndef _NODE_HPP_
 # define _NODE_HPP_
 
-# include "../Libraries.hpp"
+# include "Libraries.hpp"
 
 namespace ft
 {

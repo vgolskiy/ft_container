@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   List.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mskinner <v.golskiy@ya.ru>                 +#+  +:+       +#+        */
+/*   By: mskinner <v.golskiy@yandex.ru>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/25 13:10:54 by mskinner          #+#    #+#             */
-/*   Updated: 2021/02/02 19:48:28 by mskinner         ###   ########.fr       */
+/*   Updated: 2021/02/03 04:08:41 by mskinner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 
 # include "Node.hpp"
 # include "Iterator.hpp"
-# include "../Allocator.hpp"
+# include "Allocator.hpp"
 
 namespace ft
 {
@@ -38,7 +38,7 @@ namespace ft
 		Node<T>		*_begin;
 		Node<T>		*_end;
 		Allocator	_allocator;
-		size_t		_size;
+		std::size_t	_size;
 
 		void	swap_element(T &x, T &y) {
 			T	tmp;
@@ -167,11 +167,11 @@ namespace ft
 		};
 
 		reference				back(void) {
-			return (_end->_previous->_next->_content);
+			return (_end->_previous->_content);
 		};
 
 		const_reference			back(void) const {
-			return (_end->_previous->_next->_content);
+			return (_end->_previous->_content);
 		};
 
 		//https://en.cppreference.com/w/cpp/header/list
@@ -239,7 +239,7 @@ namespace ft
 			//Splitting old list to 2 parts and inserting new list element
 			add->_next = old;
 			add->_previous = old->_previous;
-			old->_previous->next = add;
+			old->_previous->_next = add;
 			old->_previous = add;
 			old->_previous->_next = add;
 			_size++;
@@ -250,6 +250,12 @@ namespace ft
 		void					insert(iterator pos, size_type count, const_reference value) {
 			while (count--)
 				insert(pos, value);
+		};
+
+		void					insert(iterator pos, int count, const_reference value) {
+			if (count > 0)
+				while (count--)
+					insert(pos, value);
 		};
 
 		//Inserts elements from range [first, last) before pos.

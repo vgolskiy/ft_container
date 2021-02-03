@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mskinner <v.golskiy@ya.ru>                 +#+  +:+       +#+        */
+/*   By: mskinner <v.golskiy@yandex.ru>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 16:35:09 by mskinner          #+#    #+#             */
-/*   Updated: 2021/02/02 19:48:35 by mskinner         ###   ########.fr       */
+/*   Updated: 2021/02/03 04:08:29 by mskinner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int main(void)
 	};
 	std::cout << std::endl;
 
-    ft::List<char> l8(3, 'A');
+    ft::List<char> l8(static_cast<std::size_t>(3), 65);
     std::cout << "list has 3 elements? " << (l8.size() == 3) << std::endl;
 	printContainer(l8);
     std::cout << "list has char front? " << (l8.front() == char()) << std::endl;
@@ -254,7 +254,7 @@ int main(void)
 	std::cout << "std: ";
 	printContainer(sl20);
 
-	std::cout << "LIST ALL MEMBRERS TESTING ONE BY ONE >>>" << std::endl;
+	std::cout << std::endl << "LIST ALL MEMBRERS TESTING ONE BY ONE >>>" << std::endl;
 	ft::List<int> list1,list2;
 	int i;
 	
@@ -294,13 +294,13 @@ int main(void)
 
 	// seek the last element in list 2
 	std::cout << list2.back() << " is now the last element in list 2\n";
-/*
+
 	//Inserting elements in list 1.
-	ft::List<int>::iterator it;
-	list1.insert(it,5,10);
+	ft::List<int>::iterator it = list1.begin();
+	list1.insert(it, 5, 10);
 	std::cout << "After Insertion list 1: ";
 	printContainer(list1);
-
+/*
 	//remove() to remove all the elements with value 10.
 	list1.remove(10);
 	std::cout << "After Removal list 1: ";
