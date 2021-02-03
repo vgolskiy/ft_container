@@ -6,7 +6,7 @@
 /*   By: mskinner <v.golskiy@yandex.ru>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/25 13:10:54 by mskinner          #+#    #+#             */
-/*   Updated: 2021/02/03 04:08:41 by mskinner         ###   ########.fr       */
+/*   Updated: 2021/02/03 05:53:07 by mskinner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,17 +233,28 @@ namespace ft
 
 		//Inserts value before pos
 		iterator				insert(iterator pos, const_reference value) {
-			Node<T>	*add = new Node<T>(value);
-			Node<T>	*old = pos.get_list();
+			if (pos == begin()) {
+				push_front(value);
+				return (pos);
+			}
+			else if (pos == end()) {
+				push_back(value);
+				return (pos);
+			}
+			else {
+				Node<T>	*add = new Node<T>(value);
+				Node<T>	*old = pos.get_list();
 
-			//Splitting old list to 2 parts and inserting new list element
-			add->_next = old;
-			add->_previous = old->_previous;
-			old->_previous->_next = add;
-			old->_previous = add;
-			old->_previous->_next = add;
-			_size++;
-			return (--pos);
+				//Splitting old list to 2 parts and inserting new list element
+				if (old->_previous) {
+					add->_previous = old->_previous;
+					old->_previous->_next = add;
+				}
+				add->_next = old;
+				old->_previous = add;
+				_size++;
+				return (--pos);
+			}
 		};
 
 		//Inserts value before pos
@@ -263,7 +274,7 @@ namespace ft
 		void					insert(iterator pos, InputIt first, InputIt last) {
 			InputIt	it;
 			
-			for (it = first; it != last; it++)
+			for (it = first; it != last; ++it)
 				insert(pos, *first);
 		};
 
@@ -272,9 +283,8 @@ namespace ft
 			if (pos != this->end()) {
 				Node<T> *tmp = pos.get_list();
 
-				pos++;
 				tmp->_next->_previous = tmp->_previous;
-				tmp->_previous->_next = tmp->next;
+				tmp->_previous->_next = tmp->_next;
 				delete tmp;
 				_size--;
 			}
@@ -285,7 +295,7 @@ namespace ft
 		iterator				erase(iterator first, iterator last) {
 			iterator	it;
 			
-			for (it = first; it != last; it++)
+			for (it = first; it != last; ++it)
 				it = erase(it);
 			return (iterator(_begin));
 		};
@@ -442,10 +452,12 @@ namespace ft
 		void					remove(const_reference value) {
 			if (_size) {
 				iterator	it;
+                iterator    tmp;
 
-				for (it = begin(); it != end(); ++it)
+                for (it = begin(); it != end(); ++it) {
 					if (*it == value)
 						it = erase(it);
+                }
 			}
 		};
 
@@ -464,8 +476,12 @@ namespace ft
 		//Reverses the order of the elements in the container.
 		void					reverse(void) {
 			if (_size > 1) {
-				reverse_iterator it = rbegin();
-				splice(it, *this);
+                size_type        count = _size;
+				reverse_iterator it;
+                for (it = rbegin(); it != rend(); ++it)
+                    push_back(*it);
+                while (count--)
+                    pop_front();
 			}
 		};
 
@@ -478,14 +494,18 @@ namespace ft
 		void					unique(void) {
 			if (_size > 1) {
 				iterator	it = begin();
-				iterator	tmp = begin() + 1;
+				iterator	tmp = begin();
 
 				while (it != end()) {
+                    tmp = it + 1;
 					while (tmp != end()) {
+                        std::cout << *it << " " << *tmp;
 						if (*tmp == *it)
 							tmp = erase(tmp);
 						else
 							tmp++;
+                        std::cout << std::endl;
+                        
 					}
 					it++;
 				}
