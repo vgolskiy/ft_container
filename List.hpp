@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   List.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mskinner <v.golskiy@yandex.ru>             +#+  +:+       +#+        */
+/*   By: mskinner <v.golskiy@ya.ru>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/25 13:10:54 by mskinner          #+#    #+#             */
-/*   Updated: 2021/02/03 05:53:07 by mskinner         ###   ########.fr       */
+/*   Updated: 2021/02/04 13:07:59 by mskinner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,12 @@ namespace ft
 		//MEMBER FUNCTIONS
 		//Default constructor. Constructs an empty container with a default-constructed allocator.
 		List(void) : _allocator(allocator_type()), _size(0) {
-				_begin = new Node<T>;
-				_end = new Node<T>;
-				_begin->_next = _end;
-				_end->_previous = _begin;
+			_begin = new Node<T>;
+			_end = new Node<T>;
+			_begin->_next = _end;
+			_begin->_previous = _end;
+			_end->_previous = _begin;
+			_end->_next = _begin;
 		};
 		
 		//Constructs an empty container with the given allocator alloc.
@@ -80,7 +82,9 @@ namespace ft
 				_begin = new Node<T>;
 				_end = new Node<T>;
 				_begin->_next = _end;
+				_begin->_previous = _end;
 				_end->_previous = _begin;
+				_end->_next = _begin;
 		};
 
 		//Constructs the container with count copies of elements with value value.
@@ -89,7 +93,9 @@ namespace ft
 				_begin = new Node<T>;
 				_end = new Node<T>;
 				_begin->_next = _end;
+				_begin->_previous = _end;
 				_end->_previous = _begin;
+				_end->_next = _begin;
 				while (count--)
 					push_back(value);
 		};
@@ -101,7 +107,9 @@ namespace ft
 				_begin = new Node<T>;
 				_end = new Node<T>;
 				_begin->_next = _end;
+				_begin->_previous = _end;
 				_end->_previous = _begin;
+				_end->_next = _begin;
 				assign<InputIt>(first, last);
 		};
 
@@ -110,7 +118,9 @@ namespace ft
 			_begin = new Node<T>;
 			_end = new Node<T>;
 			_begin->_next = _end;
+			_begin->_previous = _end;
 			_end->_previous = _begin;
+			_end->_next = _begin;
 			assign(copy.begin(), copy.end());
 		};
 
@@ -275,20 +285,19 @@ namespace ft
 			InputIt	it;
 			
 			for (it = first; it != last; ++it)
-				insert(pos, *first);
+				insert(pos, *it);
 		};
 
-		//Removes the element at pos.
+		//Removes the element at pos (the end() iterator cannot be used as a value for pos)
 		iterator				erase(iterator pos) {
-			if (pos != this->end()) {
-				Node<T> *tmp = pos.get_list();
+			Node<T> *next = pos.get_list()->_next;
+			Node<T> *prev = pos.get_list()->_previous;
 
-				tmp->_next->_previous = tmp->_previous;
-				tmp->_previous->_next = tmp->_next;
-				delete tmp;
-				_size--;
-			}
-			return (pos);
+			next->_previous = prev;
+			prev->_next = next;
+			delete pos.get_list();
+			_size--;
+			return (iterator(next));
 		};
 
 		//Removes the elements in the range [first, last).
@@ -296,8 +305,10 @@ namespace ft
 			iterator	it;
 			
 			for (it = first; it != last; ++it)
-				it = erase(it);
-			return (iterator(_begin));
+				erase(it);
+			if (last == end())
+				return (iterator(_end));
+			return (last);
 		};
 
 		//Appends the given element value to the end of the container.
@@ -380,11 +391,11 @@ namespace ft
 		** The function does nothing if other refers to the same object as *this.
 		*/
 		void					merge(List &other) {
-			if ((this != &other) && (!other.empty()) && (!empty())) {
+			if ((this != &other) && (!other.empty())) {
 				iterator	it = begin();
 				iterator	ito = other.begin();
 
-				while (other._size && (ito != other.end())) {
+				while (ito != other.end()) {
 					while ((it != end()) && (*it < *ito))
 						it++;
 					if (it != end())
@@ -392,8 +403,9 @@ namespace ft
 					else
 					{
 						push_back(*ito);
-						ito = other.erase(ito);
+						other.erase(ito);
 					}
+					ito++;
 				}
 			}
 		};
@@ -401,11 +413,11 @@ namespace ft
 		//Comp - comparison function object which returns ​true if the first argument is less than (i.e. is ordered before) the second. 
 		template <class Compare> 
 		void					merge(List &other, Compare comp) {
-			if ((this != &other) && (!other.empty()) && (!empty())) {
+			if ((this != &other) && (!other.empty())) {
 				iterator	it = begin();
 				iterator	ito = other.begin();
 
-				while (other._size && (ito != other.end())) {
+				while (ito != other.end()) {
 					while ((it != end()) && (comp(*it, *ito)))
 						it++;
 					if (it != end())
@@ -413,8 +425,9 @@ namespace ft
 					else
 					{
 						push_back(*ito);
-						ito = other.erase(ito);
+						other.erase(ito);
 					}
+					ito++;
 				}
 			}
 		};
@@ -426,7 +439,7 @@ namespace ft
 		** UB if other refers to the same object as *this.
 		*/
 		void					splice(iterator pos, List &other) {
-			insert<iterator>(pos, other.begin(), other.end());
+			insert(pos, other.begin(), other.end());
 			other.clear();
 		};
 
@@ -452,11 +465,10 @@ namespace ft
 		void					remove(const_reference value) {
 			if (_size) {
 				iterator	it;
-                iterator    tmp;
 
                 for (it = begin(); it != end(); ++it) {
 					if (*it == value)
-						it = erase(it);
+						erase(it);
                 }
 			}
 		};
@@ -469,7 +481,7 @@ namespace ft
 
 				for (it = begin(); it != end(); ++it)
 					if (p(*it))
-						it = erase(it);
+						erase(it);
 			}			
 		};
 
@@ -496,18 +508,14 @@ namespace ft
 				iterator	it = begin();
 				iterator	tmp = begin();
 
-				while (it != end()) {
-                    tmp = it + 1;
-					while (tmp != end()) {
-                        std::cout << *it << " " << *tmp;
-						if (*tmp == *it)
-							tmp = erase(tmp);
-						else
-							tmp++;
-                        std::cout << std::endl;
-                        
+				tmp = it + 1;
+				while ((tmp != end()) && (it != end())) {
+					if (*tmp == *it)
+						tmp = erase(tmp);
+					else {
+						tmp++;
+						it++;
 					}
-					it++;
 				}
 			}
 		};
