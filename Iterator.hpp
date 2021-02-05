@@ -6,7 +6,7 @@
 /*   By: mskinner <v.golskiy@ya.ru>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/25 17:43:11 by mskinner          #+#    #+#             */
-/*   Updated: 2021/02/01 14:01:40 by mskinner         ###   ########.fr       */
+/*   Updated: 2021/02/06 01:47:35 by mskinner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ namespace ft
 		};
 
 		//Returns pointer address
-		Node<T>*	get_list(void) {
+		Node<T>*	get_list(void) const {
 			return (_list);
 		};
 
@@ -81,11 +81,11 @@ namespace ft
 			return (_list < other._list);
 		};
 
-		T&	operator*(void) {
+		T&	operator*(void) const {
 			return (_list->_content);
 		};
 
-		T*	operator->(void) {
+		T*	operator->(void) const {
 			return (&_list->_content);
 		};
 
@@ -127,7 +127,7 @@ namespace ft
 			return (*this);
 		};
 
-		Iterator	operator+(int n) const {
+		Iterator	operator+(int n) {
 			Iterator	inc(*this);
 
 			inc += n;
@@ -142,7 +142,7 @@ namespace ft
 			return (*this);
 		};
 
-		Iterator	operator-(int n) const {
+		Iterator	operator-(int n) {
 			Iterator	dec(*this);
 			
 			dec -= n;
@@ -201,12 +201,26 @@ namespace ft
 			return (*this);
 		};
 
+		ReverseIterator		operator+(int n) const {
+			ReverseIterator	inc(*this);
+
+			inc -= n;
+			return (inc);
+		};
+
 		ReverseIterator&	operator-=(int n) {
 			while (n-- > 0)
 				operator++();
 			while (n++ < 0)
 				operator--();
 			return (*this);
+		};
+
+		ReverseIterator		operator-(int n) const {
+			ReverseIterator	dec(*this);
+			
+			dec += n;
+			return (dec);
 		};
 	};
 
@@ -276,7 +290,7 @@ namespace ft
 			return (*this);
 		};
 
-		ConstantIterator	operator+(int n) const {
+		ConstantIterator	operator+(int n) {
 			ConstantIterator	inc(*this);
 
 			inc += n;
@@ -291,7 +305,7 @@ namespace ft
 			return (*this);
 		};
 
-		ConstantIterator	operator-(int n) const {
+		ConstantIterator	operator-(int n) {
 			ConstantIterator	dec(*this);
 			
 			dec -= n;
@@ -353,12 +367,11 @@ namespace ft
 			return (postfix);
 		};
 
-		ConstantReverseIterator&	operator+=(int n) {
-			while (n++ < 0)
-				operator++();
-			while (n-- > 0)
-				operator--();
-			return (*this);
+		ConstantReverseIterator		operator+(int n) const {
+			ConstantReverseIterator	inc(*this);
+
+			inc -= n;
+			return (inc);
 		};
 
 		ConstantReverseIterator&	operator-=(int n) {
@@ -367,6 +380,13 @@ namespace ft
 			while (n++ < 0)
 				operator--();
 			return (*this);
+		};
+
+		ConstantReverseIterator		operator-(int n) const {
+			ConstantReverseIterator	dec(*this);
+			
+			dec += n;
+			return (dec);
 		};
 	};
 };
